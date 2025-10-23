@@ -51,24 +51,26 @@ jobs:
       with:
         python-version: '3.12'
 
-    - name: Convert JaCoCo to Cobertura format
+    - name: Install diff-cover
+      if: github.event_name == 'pull_request'
+      run: pip install diff-cover
+
+    - name: Get PR diff
       if: github.event_name == 'pull_request'
       run: |
-        chmod +x .github/scripts/cover2cover.py
-        # Find all src/main/java directories dynamically
-        SOURCE_DIRS=$(find . -type d -path "*/src/main/java" | tr '\n' ' ')
-        .github/scripts/cover2cover.py coverage-report/target/site/jacoco-aggregate/jacoco.xml $SOURCE_DIRS > coverage-report/target/site/jacoco-aggregate/cobertura.xml
+        # Get the diff for this PR and save it to a file
+        gh pr diff ${{ github.event.pull_request.number }} > pr.diff
+        cat pr.diff
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Run diff-cover and generate report
       if: github.event_name == 'pull_request'
       run: |
-        pip install diff-cover
-        # Get the base branch for comparison
-        BASE_BRANCH="${{ github.event.pull_request.base.ref }}"
-
         # Run diff-cover to generate a report showing coverage only for changed lines
-        diff-cover coverage-report/target/site/jacoco-aggregate/cobertura.xml \
-          --compare-branch=origin/$BASE_BRANCH \
+        # diff-cover supports JaCoCo XML format directly, no conversion needed
+        diff-cover coverage-report/target/site/jacoco-aggregate/jacoco.xml \
+          --diff-file=pr.diff \
           --json-report diff-cover.json \
           --markdown-report diff-cover.md \
           --fail-under=0
@@ -88,8 +90,15 @@ jobs:
         # Make script executable
         chmod +x .github/scripts/diff-cover-to-reviewdog.py
 
-        # Run the script and pipe output to reviewdog
-        .github/scripts/diff-cover-to-reviewdog.py | reviewdog -f=rdjson -name="diff-cover" -reporter=github-pr-review -filter-mode=nofilter -fail-on-error=false
+        # Run the script and capture output
+        OUTPUT=$(.github/scripts/diff-cover-to-reviewdog.py)
+
+        # Only run reviewdog if there are violations
+        if [ -n "$OUTPUT" ]; then
+          echo "$OUTPUT" | reviewdog -f=rdjson -name="diff-cover" -reporter=github-pr-review -filter-mode=nofilter -fail-on-error=false
+        else
+          echo "No coverage violations found in diff"
+        fi
 
     - name: Report results to DeepSource
       run: |
