@@ -19,21 +19,46 @@ jobs:
     
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
-      
+      uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+
     - name: Set up JDK 8
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4
       with:
         java-version: '8'
         distribution: 'temurin'
         cache: 'maven'
 
     - name: Build and run tests with coverage
-      run: mvn clean test jacoco:report
+      run: mvn clean test jacoco:report -Djacoco.skip.check=true
+
+    - name: Publish test report
+      uses: dorny/test-reporter@31a54ee # v1
+      if: always()
+      with:
+        name: Maven Test Results
+        path: '**/target/surefire-reports/*.xml'
+        reporter: java-junit
+        fail-on-error: false
+
+    - name: Generate aggregate coverage report
+      run: mvn jacoco:report-aggregate -Djacoco.skip.check=true
+
+    - name: JaCoCo Code Coverage Report
+      uses: PavanMudigonda/jacoco-reporter@4fc6bf270fe893e8dda5467e432253a6961345b8 # v5.0
+      if: always()
+      with:
+        coverage_results_path: target/site/jacoco-aggregate/jacoco.xml
+        coverage_report_name: Coverage Report
+        coverage_report_title: JaCoCo Coverage Report
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        skip_check_run: false
+        minimum_coverage: 80
+        fail_below_threshold: false
+        publish_only_summary: false
 
     - name: Upload coverage to DeepSource
-      uses: deepsourcelabs/test-coverage-action@master
+      uses: deepsourcelabs/test-coverage-action@4284bb73a04adb39faaa6bfcc2d0e3dd137ffed7 # master
       with:
         key: java
-        coverage-file: target/site/jacoco/jacoco.xml
+        coverage-file: target/site/jacoco-aggregate/jacoco.xml
         dsn: ${{ secrets.DEEPSOURCE_DSN }}

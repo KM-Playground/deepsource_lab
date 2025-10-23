@@ -3,8 +3,8 @@ package com.bidgely.library.exception;
 /**
  * Base exception for library operations.
  */
-public class LibraryException extends Exception {
-    
+public class LibraryException extends RuntimeException {
+
     public LibraryException(String message) {
         super(message);
     }

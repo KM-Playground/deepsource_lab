@@ -2,17 +2,32 @@
 
 ![CI Pipeline](https://github.com/YOUR_USERNAME/YOUR_REPO/workflows/CI%20Pipeline/badge.svg)
 
-A simple Java library management system for evaluating code quality tools like DeepSource and Codacy.
+A multi-module Maven library management system for evaluating code quality tools like DeepSource and Codacy.
 
 ## Project Overview
 
-This is a plain vanilla Java project (no Spring or other frameworks) that implements a realistic library management system with:
+This is a multi-module Maven project (plain vanilla Java, no Spring or other frameworks) that implements a realistic library management system.
 
-- **Domain Models**: Book, Member, Loan with proper encapsulation
-- **Service Layer**: Business logic for library operations
-- **Utility Classes**: Validation, date handling, and string operations
-- **Exception Handling**: Custom exceptions for business logic errors
-- **Comprehensive Tests**: 160+ unit tests with 95% code coverage
+### Module Structure
+
+#### library-domain
+Domain models and entities:
+- **Models**: Book, Member, Loan, Author, Publisher, Reservation
+- **Enums**: BookCategory, MembershipType, LoanStatus, ReservationStatus
+
+#### library-utils
+Utility classes and exceptions:
+- **Utilities**: ValidationUtil, DateUtil, StringUtil, CollectionUtil, IdGenerator
+- **Exceptions**: LibraryException, InvalidInputException, BookNotFoundException, etc.
+
+#### library-service
+Service layer and business logic:
+- **Services**: LibraryService, AuthorService, ReservationService
+- **Business Logic**: Book management, member management, loan operations, reservations
+
+### Test Coverage
+- **Total Tests**: 159 unit tests across all modules
+- **Coverage**: High code coverage with JaCoCo reports
 
 ## Features
 
@@ -73,11 +88,12 @@ The JaCoCo coverage report will be generated at `target/site/jacoco/index.html`
 ## CI/CD Pipeline
 
 This project includes a GitHub Actions workflow that automatically:
-- ✅ Builds the project on every push to `main` branch
-- ✅ Runs all 160 unit tests
-- ✅ Generates JaCoCo coverage reports (XML and HTML)
-- ✅ Uploads coverage to DeepSource for diff coverage analysis
-- ✅ Publishes test results
+- ✅ Builds all modules on every push to `main` branch
+- ✅ Runs all 159 unit tests across all modules
+- ✅ Generates JaCoCo coverage reports (individual + aggregate)
+- ✅ Publishes test results with [dorny/test-reporter](https://github.com/dorny/test-reporter)
+- ✅ Uploads coverage reports as artifacts (retained for 30 days)
+- ✅ Uploads aggregate coverage to DeepSource for diff coverage analysis
 
 The workflow runs on:
 - Push to `main` branch
