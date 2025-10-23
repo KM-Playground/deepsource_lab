@@ -170,5 +170,10 @@ class StringUtilTest {
     void testReverse_withNull() {
         assertThat(StringUtil.reverse(null)).isNull();
     }
+
+    @Test
+    void testIsPalindrome_withNull() {
+        assertThat(StringUtil.isPalindrome(null)).isFalse();
+    }
 }
 

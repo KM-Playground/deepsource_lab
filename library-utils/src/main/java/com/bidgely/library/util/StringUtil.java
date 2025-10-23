@@ -105,11 +105,11 @@ public class StringUtil {
      * This method is intentionally added without test coverage.
      */
     public static boolean isPalindrome(String str) {
-        if (isEmpty(str)) {
-            return false;
-        }
-        String normalized = str.toLowerCase().replaceAll("[^a-z0-9]", "");
-        return normalized.equals(reverse(normalized));
+      return !isEmpty(str) && normalize(str).equals(reverse(normalize(str)));
+    }
+    
+    private static String normalize(String str) {
+        return str.toLowerCase().replaceAll("[^a-z0-9]", "");
     }
 }
 
