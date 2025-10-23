@@ -11,6 +11,7 @@ permissions:
   contents: read
   actions: read
   checks: write
+  id-token: write  # Required to get the OIDC token
 
 jobs:
   test-and-coverage:
@@ -43,22 +44,10 @@ jobs:
     - name: Generate aggregate coverage report
       run: mvn jacoco:report-aggregate -Djacoco.skip.check=true
 
-    - name: JaCoCo Code Coverage Report
-      uses: PavanMudigonda/jacoco-reporter@4fc6bf270fe893e8dda5467e432253a6961345b8 # v5.0
-      if: always()
-      with:
-        coverage_results_path: target/site/jacoco-aggregate/jacoco.xml
-        coverage_report_name: Coverage Report
-        coverage_report_title: JaCoCo Coverage Report
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        skip_check_run: false
-        minimum_coverage: 80
-        fail_below_threshold: false
-        publish_only_summary: false
-
-    - name: Upload coverage to DeepSource
-      uses: deepsourcelabs/test-coverage-action@4284bb73a04adb39faaa6bfcc2d0e3dd137ffed7 # master
-      with:
-        key: java
-        coverage-file: target/site/jacoco-aggregate/jacoco.xml
-        dsn: ${{ secrets.DEEPSOURCE_DSN }}
+    - name: Report results to DeepSource
+      run: |
+      # Install deepsource CLI
+        curl https://deepsource.io/cli | sh
+        
+      # From the root directory, run the report coverage command
+        ./bin/deepsource report --analyzer test-coverage --key java --value-file target/site/jacoco-aggregate/jacoco.xml --use-oidc
