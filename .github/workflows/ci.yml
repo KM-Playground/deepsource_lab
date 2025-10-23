@@ -42,7 +42,7 @@ jobs:
         fail-on-error: false
 
     - name: Generate aggregate coverage report
-      run: mvn jacoco:report-aggregate -Djacoco.skip.check=true
+      run: mvn jacoco:report-aggregate -Djacoco.skip.check=true -ntp
 
     - name: Report results to DeepSource
       run: |

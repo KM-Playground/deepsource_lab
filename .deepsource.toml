@@ -6,6 +6,8 @@ enabled = true
 
   [analyzers.meta]
   runtime_version = "8"
+  # Build tool: maven or gradle (helps analyzer run the right commands)
+  build_tool = "maven"
 
 [[analyzers]]
 name = "test-coverage"
