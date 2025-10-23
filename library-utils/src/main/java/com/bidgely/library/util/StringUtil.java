@@ -90,5 +90,29 @@ public class StringUtil {
         sb.append(str);
         return sb.toString();
     }
+
+    /**
+     * Reverses a string.
+     * This method is intentionally added without test coverage to demonstrate
+     * DeepSource coverage reporting on pull requests.
+     */
+    public static String reverse(String str) {
+        if (isEmpty(str)) {
+            return str;
+        }
+        return new StringBuilder(str).reverse().toString();
+    }
+
+    /**
+     * Checks if a string is a palindrome (reads the same forwards and backwards).
+     * This method is intentionally added without test coverage.
+     */
+    public static boolean isPalindrome(String str) {
+        if (isEmpty(str)) {
+            return false;
+        }
+        String normalized = str.toLowerCase().replaceAll("[^a-z0-9]", "");
+        return normalized.equals(reverse(normalized));
+    }
 }
 
