@@ -32,7 +32,7 @@ jobs:
       run: mvn clean test jacoco:report -Djacoco.skip.check=true
 
     - name: Publish test report
-      uses: dorny/test-reporter@31a54ee # v1
+      uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5 # v1
       if: always()
       with:
         name: Maven Test Results
