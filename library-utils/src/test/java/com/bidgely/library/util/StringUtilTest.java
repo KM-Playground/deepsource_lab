@@ -165,5 +165,20 @@ class StringUtilTest {
     void testPadLeft_withNull() {
         assertThat(StringUtil.padLeft(null, 5, '0')).isEqualTo("00000");
     }
+
+    @Test
+    void testReverse_withNull() {
+        assertThat(StringUtil.reverse(null)).isNull();
+    }
+
+    @Test
+    void testIsPalindrome_withNull() {
+        assertThat(StringUtil.isPalindrome(null)).isFalse();
+    }
+
+    @Test
+    void testNormalize() {
+        assertThat(StringUtil.normalize("Hello World!")).isEqualTo("helloworld");
+    }
 }
 
