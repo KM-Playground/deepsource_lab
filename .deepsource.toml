@@ -11,7 +11,3 @@ test_patterns = ["**/src/test/java/**"]
 [[analyzers]]
   name = "test-coverage"
   enabled = true
-
-[[transformers]]
-  name = "google-java-format"
-  enabled = true
