@@ -175,5 +175,10 @@ class StringUtilTest {
     void testIsPalindrome_withNull() {
         assertThat(StringUtil.isPalindrome(null)).isFalse();
     }
+
+    @Test
+    void testNormalize() {
+        assertThat(StringUtil.normalize("Hello World!")).isEqualTo("helloworld");
+    }
 }
 

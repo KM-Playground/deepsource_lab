@@ -107,8 +107,8 @@ public class StringUtil {
     public static boolean isPalindrome(String str) {
       return !isEmpty(str) && normalize(str).equals(reverse(normalize(str)));
     }
-    
-    private static String normalize(String str) {
+
+    public static String normalize(String str) {
         return str.toLowerCase().replaceAll("[^a-z0-9]", "");
     }
 }
