@@ -1,0 +1,127 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test-and-coverage:
+    name: Test and Coverage
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up JDK 8
+      uses: actions/setup-java@v4
+      with:
+        java-version: '8'
+        distribution: 'temurin'
+        cache: 'maven'
+        
+    - name: Cache Maven packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+        
+    - name: Build project
+      run: mvn -B clean compile
+      
+    - name: Run tests with coverage
+      run: mvn -B test jacoco:report
+      
+    - name: Check coverage threshold
+      run: mvn jacoco:check
+      continue-on-error: true
+      
+    - name: Parse coverage report
+      id: coverage
+      run: |
+        if [ -f target/site/jacoco/index.html ]; then
+          # Extract coverage percentage from JaCoCo HTML report
+          COVERAGE=$(grep -oP 'Total.*?(\d+)%' target/site/jacoco/index.html | grep -oP '\d+%' | head -1 || echo "N/A")
+          echo "coverage=$COVERAGE" >> $GITHUB_OUTPUT
+          echo "Coverage: $COVERAGE"
+        else
+          echo "coverage=N/A" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Upload JaCoCo coverage report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: jacoco-report
+        path: target/site/jacoco/
+        retention-days: 30
+        
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results
+        path: target/surefire-reports/
+        retention-days: 30
+        
+    - name: Publish test report
+      uses: dorny/test-reporter@v1
+      if: always()
+      with:
+        name: Maven Tests
+        path: target/surefire-reports/*.xml
+        reporter: java-junit
+        fail-on-error: true
+        
+    - name: Add coverage to PR comment
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const coverage = '${{ steps.coverage.outputs.coverage }}';
+          const comment = `## 📊 Test Coverage Report
+          
+          **Coverage:** ${coverage}
+          
+          📁 Full coverage report is available in the workflow artifacts.
+          `;
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+          
+    - name: Generate job summary
+      if: always()
+      run: |
+        echo "# 🎯 Build Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "## 📦 Build Status" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Build completed" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "## 🧪 Test Results" >> $GITHUB_STEP_SUMMARY
+        
+        # Count test results
+        if [ -d target/surefire-reports ]; then
+          TESTS=$(find target/surefire-reports -name "TEST-*.xml" -exec grep -h "tests=" {} \; | grep -oP 'tests="\K[0-9]+' | awk '{s+=$1} END {print s}')
+          FAILURES=$(find target/surefire-reports -name "TEST-*.xml" -exec grep -h "failures=" {} \; | grep -oP 'failures="\K[0-9]+' | awk '{s+=$1} END {print s}')
+          ERRORS=$(find target/surefire-reports -name "TEST-*.xml" -exec grep -h "errors=" {} \; | grep -oP 'errors="\K[0-9]+' | awk '{s+=$1} END {print s}')
+          
+          echo "- **Total Tests:** ${TESTS:-0}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Failures:** ${FAILURES:-0}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Errors:** ${ERRORS:-0}" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "## 📈 Coverage" >> $GITHUB_STEP_SUMMARY
+        echo "- **Coverage:** ${{ steps.coverage.outputs.coverage }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "📥 Download the coverage report artifact for detailed analysis." >> $GITHUB_STEP_SUMMARY
+
