@@ -75,22 +75,38 @@ The JaCoCo coverage report will be generated at `target/site/jacoco/index.html`
 This project includes a GitHub Actions workflow that automatically:
 - ✅ Builds the project on every push to `main` branch
 - ✅ Runs all 160 unit tests
-- ✅ Generates JaCoCo coverage reports
-- ✅ Uploads coverage reports as artifacts
-- ✅ Checks coverage thresholds (80% minimum)
+- ✅ Generates JaCoCo coverage reports (XML and HTML)
+- ✅ Uploads coverage to DeepSource for diff coverage analysis
 - ✅ Publishes test results
-- ✅ Adds coverage comments to pull requests
 
 The workflow runs on:
 - Push to `main` branch
 - Pull requests targeting `main` branch
 
+### DeepSource Integration
+
+The workflow automatically uploads coverage reports to DeepSource for:
+- **Diff Coverage Analysis** - See coverage changes in pull requests
+- **Code Quality Metrics** - Track code quality over time
+- **Automated Code Review** - Get suggestions for improvements
+
+#### Setup DeepSource:
+
+1. Sign up at [DeepSource](https://deepsource.io/)
+2. Activate your repository
+3. Get your DSN (Data Source Name) from DeepSource dashboard
+4. Add it as a GitHub secret: `Settings` → `Secrets and variables` → `Actions` → `New repository secret`
+   - Name: `DEEPSOURCE_DSN`
+   - Value: Your DSN from DeepSource
+
+The `.deepsource.toml` configuration file is already included in the repository.
+
 ### Viewing CI Results
 
 1. Go to the **Actions** tab in your GitHub repository
 2. Click on the latest workflow run
-3. Download the **jacoco-report** artifact to view detailed coverage
-4. Check the job summary for quick test and coverage statistics
+3. Check the test results in the workflow summary
+4. View coverage analysis on DeepSource dashboard
 
 ## Code Coverage
 

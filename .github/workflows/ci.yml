@@ -27,14 +27,13 @@ jobs:
         java-version: '8'
         distribution: 'temurin'
         cache: 'maven'
-        
-    - name: Run tests with coverage
+
+    - name: Build and run tests with coverage
       run: mvn clean test jacoco:report
-      
-    - name: Publish test report
-      uses: dorny/test-reporter@v1
-      if: always()
+
+    - name: Upload coverage to DeepSource
+      uses: deepsourcelabs/test-coverage-action@master
       with:
-        name: Maven Tests
-        path: target/surefire-reports/*.xml
-        reporter: java-junit
+        key: java
+        coverage-file: target/site/jacoco/jacoco.xml
+        dsn: ${{ secrets.DEEPSOURCE_DSN }}
