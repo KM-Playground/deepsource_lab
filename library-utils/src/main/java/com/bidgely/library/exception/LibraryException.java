@@ -1,16 +1,13 @@
 package com.bidgely.library.exception;
 
-/**
- * Base exception for library operations.
- */
+/** Base exception for library operations. */
 public class LibraryException extends RuntimeException {
 
-    public LibraryException(String message) {
-        super(message);
-    }
+  public LibraryException(String message) {
+    super(message);
+  }
 
-    public LibraryException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public LibraryException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }
-
