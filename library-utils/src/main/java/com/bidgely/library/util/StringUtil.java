@@ -97,10 +97,7 @@ public class StringUtil {
      * DeepSource coverage reporting on pull requests.
      */
     public static String reverse(String str) {
-        if (isEmpty(str)) {
-            return str;
-        }
-        return new StringBuilder(str).reverse().toString();
+      return isEmpty(str) ? str : new StringBuilder(str).reverse().toString();
     }
 
     /**
