@@ -45,6 +45,14 @@ jobs:
         reporter: java-junit
         fail-on-error: false
 
+    - name: Report results to DeepSource
+      run: |
+        # Install deepsource CLI
+        curl https://deepsource.io/cli | sh
+
+        # From the root directory, run the report coverage command
+        ./bin/deepsource report --analyzer=test-coverage --key=java --value-file=coverage-report/target/site/jacoco-aggregate/jacoco.xml --use-oidc
+
     - name: Setup Python
       if: github.event_name == 'pull_request'
       uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5
@@ -67,13 +75,25 @@ jobs:
     - name: Run diff-cover and generate report
       if: github.event_name == 'pull_request'
       run: |
-        # Run diff-cover to generate a report showing coverage only for changed lines
-        # diff-cover supports JaCoCo XML format directly, no conversion needed
-        diff-cover coverage-report/target/site/jacoco-aggregate/jacoco.xml \
-          --diff-file=pr.diff \
-          --json-report diff-cover.json \
-          --markdown-report diff-cover.md \
-          --fail-under=0
+        # Run diff-cover for each module separately
+        # This is necessary because aggregate JaCoCo reports don't work well with diff-cover
+
+        # Find all modules with jacoco reports (exclude coverage-report module)
+        for jacoco_report in $(find . -path "*/target/site/jacoco/jacoco.xml" -not -path "*/coverage-report/*"); do
+          # Extract module name from path (e.g., ./library-utils/target/... -> library-utils)
+          module=$(echo "$jacoco_report" | sed 's|^\./||' | sed 's|/target/.*||')
+
+          echo "Running diff-cover for module: $module"
+          diff-cover "$jacoco_report" \
+            --diff-file=pr.diff \
+            --src-roots "$module/src/main/java" \
+            --format "json:diff-cover-$module.json" \
+            --fail-under=0 || true
+        done
+
+        # Merge all JSON reports into one
+        chmod +x .github/scripts/merge-diff-cover-reports.py
+        .github/scripts/merge-diff-cover-reports.py
       continue-on-error: true
 
     - name: Setup reviewdog
@@ -99,11 +119,3 @@ jobs:
         else
           echo "No coverage violations found in diff"
         fi
-
-    - name: Report results to DeepSource
-      run: |
-        # Install deepsource CLI
-        curl https://deepsource.io/cli | sh
-
-        # From the root directory, run the report coverage command
-        ./bin/deepsource report --analyzer=test-coverage --key=java --value-file=coverage-report/target/site/jacoco-aggregate/jacoco.xml --use-oidc
