@@ -52,4 +52,4 @@ jobs:
         curl https://deepsource.io/cli | sh
 
         # From the root directory, run the report coverage command
-        ./bin/deepsource report --analyzer=test-coverage --key=java --value-file=target/site/jacoco-aggregate/jacoco.xml --use-oidc --ref=${{ github.event.pull_request.head.sha || github.sha }}
+        ./bin/deepsource report --analyzer=test-coverage --key=java --value-file=target/site/jacoco-aggregate/jacoco.xml --use-oidc
