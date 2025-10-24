@@ -165,5 +165,70 @@ class StringUtilTest {
     void testPadLeft_withNull() {
         assertThat(StringUtil.padLeft(null, 5, '0')).isEqualTo("00000");
     }
+
+    @Test
+    void testCategorizePassword_withNull() {
+        assertThat(StringUtil.categorizePassword(null)).isEqualTo("invalid");
+    }
+
+    @Test
+    void testCategorizePassword_withSpaces() {
+        assertThat(StringUtil.categorizePassword("pass word")).isEqualTo("invalid");
+    }
+
+    @Test
+    void testCategorizePassword_tooShort() {
+        assertThat(StringUtil.categorizePassword("abc")).isEqualTo("invalid");
+    }
+
+    @Test
+    void testCategorizePassword_weakOnlyLower() {
+        assertThat(StringUtil.categorizePassword("abcdef")).isEqualTo("weak");
+    }
+
+    @Test
+    void testCategorizePassword_weakOnlyUpper() {
+        assertThat(StringUtil.categorizePassword("ABCDEF")).isEqualTo("weak");
+    }
+
+    @Test
+    void testCategorizePassword_weakOnlyDigits() {
+        assertThat(StringUtil.categorizePassword("123456")).isEqualTo("weak");
+    }
+
+    @Test
+    void testCategorizePassword_weakOnlySpecial() {
+        assertThat(StringUtil.categorizePassword("!@#$%^")).isEqualTo("weak");
+    }
+
+    @Test
+    void testCategorizePassword_weakTwoTypesShort() {
+        assertThat(StringUtil.categorizePassword("Abc123")).isEqualTo("weak");
+    }
+
+    @Test
+    void testCategorizePassword_moderateTwoTypes() {
+        assertThat(StringUtil.categorizePassword("Abcdefgh")).isEqualTo("moderate");
+    }
+
+    @Test
+    void testCategorizePassword_moderateThreeTypesShort() {
+        assertThat(StringUtil.categorizePassword("Abc123!@")).isEqualTo("moderate");
+    }
+
+    @Test
+    void testCategorizePassword_strongThreeTypes() {
+        assertThat(StringUtil.categorizePassword("Abcdef1234")).isEqualTo("strong");
+    }
+
+    @Test
+    void testCategorizePassword_strongFourTypesShort() {
+        assertThat(StringUtil.categorizePassword("Abcd123!@#")).isEqualTo("strong");
+    }
+
+    @Test
+    void testCategorizePassword_veryStrong() {
+        assertThat(StringUtil.categorizePassword("Abcdef123!@#")).isEqualTo("very-strong");
+    }
 }
 

@@ -90,5 +90,102 @@ public class StringUtil {
         sb.append(str);
         return sb.toString();
     }
+
+    /**
+     * Validates and categorizes a password based on multiple security criteria.
+     * Returns a category string indicating the password strength.
+     *
+     * @param password the password to validate
+     * @return category string: "invalid", "weak", "moderate", "strong", or "very-strong"
+     */
+    public static String categorizePassword(String password) {
+        if (password == null) {
+            return "invalid";
+        }
+
+        int length = password.length();
+        boolean hasUpper = false;
+        boolean hasLower = false;
+        boolean hasDigit = false;
+        boolean hasSpecial = false;
+        boolean hasSpace = false;
+
+        // Check character types
+        for (int i = 0; i < length; i++) {
+            char c = password.charAt(i);
+            if (Character.isUpperCase(c)) {
+                hasUpper = true;
+            } else if (Character.isLowerCase(c)) {
+                hasLower = true;
+            } else if (Character.isDigit(c)) {
+                hasDigit = true;
+            } else if (Character.isWhitespace(c)) {
+                hasSpace = true;
+            } else {
+                hasSpecial = true;
+            }
+        }
+
+        // Invalid if contains spaces
+        if (hasSpace) {
+            return "invalid";
+        }
+
+        // Invalid if too short
+        if (length < 6) {
+            return "invalid";
+        }
+
+        // Weak: only one character type
+        if ((hasUpper && !hasLower && !hasDigit && !hasSpecial) ||
+            (!hasUpper && hasLower && !hasDigit && !hasSpecial) ||
+            (!hasUpper && !hasLower && hasDigit && !hasSpecial) ||
+            (!hasUpper && !hasLower && !hasDigit && hasSpecial)) {
+            return "weak";
+        }
+
+        // Moderate: two character types
+        if ((hasUpper && hasLower && !hasDigit && !hasSpecial) ||
+            (hasUpper && !hasLower && hasDigit && !hasSpecial) ||
+            (hasUpper && !hasLower && !hasDigit && hasSpecial) ||
+            (!hasUpper && hasLower && hasDigit && !hasSpecial) ||
+            (!hasUpper && hasLower && !hasDigit && hasSpecial) ||
+            (!hasUpper && !hasLower && hasDigit && hasSpecial)) {
+            if (length >= 8) {
+                return "moderate";
+            } else {
+                return "weak";
+            }
+        }
+
+        // Strong: three character types
+        if ((hasUpper && hasLower && hasDigit && !hasSpecial) ||
+            (hasUpper && hasLower && !hasDigit && hasSpecial) ||
+            (hasUpper && !hasLower && hasDigit && hasSpecial) ||
+            (!hasUpper && hasLower && hasDigit && hasSpecial)) {
+            if (length >= 10) {
+                return "strong";
+            } else if (length >= 8) {
+                return "moderate";
+            } else {
+                return "weak";
+            }
+        }
+
+        // Very strong: all four character types
+        if (hasUpper && hasLower && hasDigit && hasSpecial) {
+            if (length >= 12) {
+                return "very-strong";
+            } else if (length >= 10) {
+                return "strong";
+            } else if (length >= 8) {
+                return "moderate";
+            } else {
+                return "weak";
+            }
+        }
+
+        return "weak";
+    }
 }
 
