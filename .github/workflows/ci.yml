@@ -4,17 +4,10 @@ on:
   push:
     branches:
       - main
-    paths:
-      - '**/*.java'
-      - '**/pom.xml'
-      - '.github/workflows/ci.yml'
   pull_request:
     branches:
       - main
-    paths:
-      - '**/*.java'
-      - '**/pom.xml'
-      - '.github/workflows/ci.yml'
+
 permissions:
   contents: read
   actions: read
@@ -32,7 +25,18 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
+    - name: Check for code changes
+      uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
+      id: changes
+      with:
+        filters: |
+          code:
+            - '**/*.java'
+            - '**/pom.xml'
+            - '.github/workflows/ci.yml'
+
     - name: Set up JDK 8
+      if: steps.changes.outputs.code == 'true'
       uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4
       with:
         java-version: '8'
@@ -40,18 +44,32 @@ jobs:
         cache: 'maven'
 
     - name: Build and run tests with coverage
+      if: steps.changes.outputs.code == 'true'
       run: mvn clean test jacoco:report jacoco:report-aggregate -pl coverage-report -am -ntp
 
+    - name: Generate empty coverage report (no code changes)
+      if: steps.changes.outputs.code != 'true'
+      run: |
+        echo "No code changes detected - creating minimal coverage report"
+        mkdir -p coverage-report/target/site/jacoco-aggregate
+        cat > coverage-report/target/site/jacoco-aggregate/jacoco.xml << 'EOF'
+        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        <!DOCTYPE report PUBLIC "-//JACOCO//DTD Report 1.1//EN" "report.dtd">
+        <report name="No Code Changes">
+          <sessioninfo id="no-changes" start="0" dump="0"/>
+        </report>
+        EOF
+
     - name: Publish test report
+      if: steps.changes.outputs.code == 'true' && always()
       uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5 # v1
-      if: always()
       with:
         name: Maven Test Results
         path: '**/target/surefire-reports/*.xml'
         reporter: java-junit
         fail-on-error: false
 
-    - name: Report results to DeepSource
+    - name: Report coverage to DeepSource
       run: |
         # Install deepsource CLI
         curl https://deepsource.io/cli | sh
