@@ -37,6 +37,9 @@ public class StringUtil {
      * Truncates a string to a maximum length.
      */
     public static String truncate(String str, int maxLength) {
+        if (maxLength < 0) {
+            throw new IllegalArgumentException("maxLength cannot be negative");
+        }
         if (isEmpty(str) || str.length() <= maxLength) {
             return str;
         }
