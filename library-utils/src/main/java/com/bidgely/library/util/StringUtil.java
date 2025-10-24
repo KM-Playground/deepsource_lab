@@ -90,5 +90,12 @@ public class StringUtil {
         sb.append(str);
         return sb.toString();
     }
+
+    /**
+     * Reverses a string.
+     */
+    public static String reverse(String str) {
+        return isEmpty(str) ? str : new StringBuilder(str).reverse().toString();
+    }
 }
 
