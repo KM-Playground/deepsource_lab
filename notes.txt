@@ -1,0 +1,3 @@
+Project notes and documentation.
+These are non-code files that should be excluded.
+Testing DeepSource file exclusion patterns.
