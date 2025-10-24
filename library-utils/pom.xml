@@ -15,6 +15,18 @@
   <description>Utility classes for validation, date handling, and string operations</description>
 
   <dependencies>
+    <!-- Vulnerable dependencies for testing DeepSource security analysis -->
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>2.14.1</version> <!-- CVE-2021-44228 (Log4Shell) - Critical vulnerability -->
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.9.8</version> <!-- Multiple CVEs including CVE-2019-12384, CVE-2019-14379 -->
+    </dependency>
+
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
