@@ -15,6 +15,16 @@
   <description>Utility classes for validation, date handling, and string operations</description>
 
   <dependencies>
+    <!-- Vulnerable dependencies for testing DeepSource security analysis -->
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
