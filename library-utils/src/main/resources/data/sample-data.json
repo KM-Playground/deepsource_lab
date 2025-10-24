@@ -1,0 +1,29 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "john.doe",
+      "email": "john@example.com",
+      "password": "plaintext_password_123",
+      "role": "admin"
+    },
+    {
+      "id": 2,
+      "username": "jane.smith",
+      "email": "jane@example.com",
+      "password": "another_plaintext_pwd",
+      "role": "user"
+    }
+  ],
+  "settings": {
+    "theme": "dark",
+    "notifications": true,
+    "autoSave": false
+  },
+  "metadata": {
+    "createdAt": "2024-01-01T00:00:00Z",
+    "updatedAt": "2024-01-15T12:30:00Z",
+    "version": "1.0"
+  }
+}
+

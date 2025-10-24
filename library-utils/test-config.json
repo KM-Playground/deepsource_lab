@@ -1,0 +1,18 @@
+{
+  "testConfiguration": {
+    "runIntegrationTests": true,
+    "runPerformanceTests": false,
+    "parallelExecution": true,
+    "maxThreads": 4
+  },
+  "mockData": {
+    "enabled": true,
+    "dataSource": "embedded"
+  },
+  "reporting": {
+    "generateHtmlReport": true,
+    "generateXmlReport": true,
+    "outputDirectory": "target/test-reports"
+  }
+}
+

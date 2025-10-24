@@ -1,0 +1,42 @@
+{
+  "application": {
+    "name": "Library Utils",
+    "version": "1.0.0",
+    "environment": "development"
+  },
+  "features": {
+    "validation": {
+      "enabled": true,
+      "strictMode": false,
+      "maxRetries": 3
+    },
+    "dateHandling": {
+      "enabled": true,
+      "defaultTimezone": "UTC",
+      "dateFormat": "yyyy-MM-dd"
+    },
+    "stringOperations": {
+      "enabled": true,
+      "trimByDefault": true,
+      "caseSensitive": false
+    }
+  },
+  "security": {
+    "apiKey": "test-api-key-12345",
+    "secretToken": "hardcoded-secret-token",
+    "encryptionEnabled": false
+  },
+  "database": {
+    "host": "localhost",
+    "port": 5432,
+    "username": "admin",
+    "password": "admin123",
+    "database": "library_db"
+  },
+  "logging": {
+    "level": "DEBUG",
+    "format": "json",
+    "outputs": ["console", "file"]
+  }
+}
+

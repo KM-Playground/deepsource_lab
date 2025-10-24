@@ -15,6 +15,14 @@
   <description>Utility classes for validation, date handling, and string operations</description>
 
   <dependencies>
+    <!-- Vulnerable dependency with known CVE for testing DeepSource security scanning -->
+    <!-- CVE-2022-42889: Apache Commons Text vulnerable to variable interpolation RCE -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-text</artifactId>
+      <version>1.9</version> <!-- Vulnerable version, fixed in 1.10.0 -->
+    </dependency>
+
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
