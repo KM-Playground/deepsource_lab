@@ -1,4 +1,23 @@
 version = 1
+
+# Exclude non-code files from analysis
+exclude_patterns = [
+  "**/*.properties",
+  "**/*.txt",
+  "**/*.json",
+  "**/*.yaml",
+  "**/*.yml",
+  "**/*.xml",
+  "**/*.md",
+  "**/*.log",
+  "**/target/**",
+  "**/build/**",
+  "**/.git/**",
+  "**/.idea/**",
+  "**/.vscode/**"
+]
+
+# Mark test directories
 test_patterns = ["**/src/test/java/**"]
 
 [[analyzers]]
