@@ -1,0 +1,3 @@
+Another test file for exclusion patterns.
+This simulates non-code changes.
+DeepSource should ignore this file.
